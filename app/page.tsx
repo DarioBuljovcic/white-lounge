@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { getPlace } from "@/features/place/place";
-import { JsonLd } from "@/lib/seo/JsonLd";
+import { JsonLd } from "@/lib/seo/JsonLdScript";
 import { localBusinessJsonLd } from "@/lib/seo/jsonld";
 
 export default async function Home() {
