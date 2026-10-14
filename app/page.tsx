@@ -1,5 +1,6 @@
 import ContactSection from "@/features/home/ContactSection/ContactSection";
 import DrinksSection from "@/features/home/DrinksSection/DrinksSection";
+import EventsPreview from "@/features/home/EventsPreview/EventsPreview";
 import HeroSection from "@/features/home/HeroSection/HeroSection";
 import PlaceSection from "@/features/home/PlaceSection/PlaceSection";
 import StorySection from "@/features/home/StorySection/StorySection";
@@ -16,6 +17,7 @@ export default async function Home() {
       <HeroSection />
       <StorySection />
       <DrinksSection />
+      <EventsPreview />
       <PlaceSection />
       <ContactSection />
     </>
