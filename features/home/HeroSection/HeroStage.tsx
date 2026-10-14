@@ -11,6 +11,8 @@ import {
 } from "react";
 
 const INTRO_MS = 4000;
+// 700ms shrink plus slack, in case transitionend never fires.
+const SHRINK_FALLBACK_MS = 900;
 const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 const HEADER_ID = "site-header";
 const HEADER_HIDDEN_CLASS = "is-hero-intro";
@@ -67,16 +69,35 @@ const HeroStage = ({ children, skipLabel }: HeroStageProps) => {
       if (!slot) return;
       const rect = slot.getBoundingClientRect();
       const viewport = document.documentElement;
-      setShrinkInsets({
+      const insets = {
         top: rect.top,
         left: rect.left,
         right: viewport.clientWidth - rect.right,
         bottom: viewport.clientHeight - rect.bottom,
-      });
+      };
+      const isFullscreen = Object.values(insets).every(
+        (value) => Math.abs(value) < 1,
+      );
+      if (isFullscreen) {
+        setSettled(true);
+        return;
+      }
+      setShrinkInsets(insets);
     }, INTRO_MS);
 
     return () => window.clearTimeout(timer);
   }, [intro, shrinking]);
+
+  useEffect(() => {
+    if (!shrinking) return;
+
+    const timer = window.setTimeout(
+      () => setSettled(true),
+      SHRINK_FALLBACK_MS,
+    );
+
+    return () => window.clearTimeout(timer);
+  }, [shrinking]);
 
   const handleTransitionEnd = (event: TransitionEvent<HTMLDivElement>) => {
     if (event.target === event.currentTarget && event.propertyName === "top") {

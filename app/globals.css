@@ -104,6 +104,10 @@ body {
     border-radius: 0;
   }
 
+  body:has(.hero-frame[data-phase="intro"]) #site-header {
+    visibility: hidden;
+  }
+
   .hero-frame[data-phase="shrinking"] {
     transition:
       top var(--duration-hero-shrink) ease-in-out,
