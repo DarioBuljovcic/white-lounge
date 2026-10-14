@@ -16,6 +16,7 @@ const SHRINK_FALLBACK_MS = 900;
 const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 const HEADER_ID = "site-header";
 const HERO_TITLE_ID = "hero-title";
+const INTRO_PLAYED_KEY = "white-lounge:intro-played";
 const HEADER_HIDDEN_CLASS = "is-hero-intro";
 
 const subscribeToReducedMotion = (onChange: () => void) => {
@@ -27,6 +28,29 @@ const subscribeToReducedMotion = (onChange: () => void) => {
 const getReducedMotion = () => window.matchMedia(REDUCED_MOTION_QUERY).matches;
 const getServerReducedMotion = () => false;
 
+const subscribeToNothing = () => () => {};
+
+const hasPlayedIntro = () => {
+  try {
+    return window.sessionStorage.getItem(INTRO_PLAYED_KEY) === "1";
+  } catch {
+    return false;
+  }
+};
+
+const markIntroPlayed = () => {
+  try {
+    window.sessionStorage.setItem(INTRO_PLAYED_KEY, "1");
+  } catch {
+    // Storage can be unavailable; the intro then replays, which is harmless.
+  }
+};
+
+// A hash means the visitor is heading to a section, not to the intro.
+const getShouldSkipIntro = () =>
+  window.location.hash !== "" || hasPlayedIntro();
+const getServerShouldSkipIntro = () => false;
+
 type HeroStageProps = {
   children: ReactNode;
   skipLabel: string;
@@ -34,6 +58,7 @@ type HeroStageProps = {
 
 const HeroStage = ({ children, skipLabel }: HeroStageProps) => {
   const slotRef = useRef<HTMLDivElement>(null);
+  const skipButtonRef = useRef<HTMLButtonElement>(null);
   const shouldFocusTitleRef = useRef(false);
   const [settled, setSettled] = useState(false);
   const [shrinkInsets, setShrinkInsets] = useState<CSSProperties | null>(null);
@@ -43,7 +68,13 @@ const HeroStage = ({ children, skipLabel }: HeroStageProps) => {
     getServerReducedMotion,
   );
 
-  const intro = !reducedMotion && !settled;
+  const shouldSkipIntro = useSyncExternalStore(
+    subscribeToNothing,
+    getShouldSkipIntro,
+    getServerShouldSkipIntro,
+  );
+
+  const intro = !reducedMotion && !shouldSkipIntro && !settled;
   const shrinking = intro && shrinkInsets !== null;
   const phase = !intro ? "settled" : shrinking ? "shrinking" : "intro";
 
@@ -72,11 +103,15 @@ const HeroStage = ({ children, skipLabel }: HeroStageProps) => {
   }, [intro]);
 
   useEffect(() => {
-    if (!settled || !shouldFocusTitleRef.current) return;
+    if (settled) markIntroPlayed();
+  }, [settled]);
+
+  useEffect(() => {
+    if (phase === "intro" || !shouldFocusTitleRef.current) return;
 
     shouldFocusTitleRef.current = false;
     document.getElementById(HERO_TITLE_ID)?.focus();
-  }, [settled]);
+  }, [phase]);
 
   useEffect(() => {
     if (!intro || shrinking) return;
@@ -84,6 +119,10 @@ const HeroStage = ({ children, skipLabel }: HeroStageProps) => {
     const timer = window.setTimeout(() => {
       const slot = slotRef.current;
       if (!slot) return;
+      // The timer is about to remove the Skip button; keep focus in the hero.
+      if (document.activeElement === skipButtonRef.current) {
+        shouldFocusTitleRef.current = true;
+      }
       const rect = slot.getBoundingClientRect();
       const viewport = document.documentElement;
       const insets = {
@@ -141,6 +180,7 @@ const HeroStage = ({ children, skipLabel }: HeroStageProps) => {
         <div className="hero-content">{children}</div>
         {intro && !shrinking ? (
           <button
+            ref={skipButtonRef}
             type="button"
             className="hero-skip"
             onClick={handleSkip}

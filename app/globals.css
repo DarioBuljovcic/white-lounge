@@ -131,6 +131,53 @@ body {
     align-items: center;
     justify-content: center;
   }
+
+  /* No-JS-progress fallback. If hydration never moves the frame out of the
+     intro phase, settle it with CSS alone once the intro window has passed.
+     The animations only exist while data-phase="intro", so a working client
+     overrides them as soon as the phase changes. */
+  .hero-frame[data-phase="intro"] {
+    animation: hero-frame-settle 1ms 6s forwards;
+  }
+
+  .hero-frame[data-phase="intro"] .hero-content {
+    animation: hero-content-reveal 1ms 6s forwards;
+  }
+
+  .hero-frame[data-phase="intro"] .hero-skip {
+    animation: hero-skip-hide 1ms 6s forwards;
+  }
+
+  body:has(.hero-frame[data-phase="intro"]) #site-header {
+    animation: hero-header-reveal 1ms 6s forwards;
+  }
+}
+
+@keyframes hero-frame-settle {
+  to {
+    position: absolute;
+    inset: 0;
+    border-radius: 1.5rem;
+  }
+}
+
+@keyframes hero-content-reveal {
+  to {
+    visibility: visible;
+    opacity: 1;
+  }
+}
+
+@keyframes hero-skip-hide {
+  to {
+    visibility: hidden;
+  }
+}
+
+@keyframes hero-header-reveal {
+  to {
+    visibility: visible;
+  }
 }
 
 #site-header.is-hero-intro {

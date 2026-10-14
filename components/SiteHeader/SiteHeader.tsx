@@ -1,4 +1,5 @@
 import Link from "next/link";
+import MobileNav from "@/components/SiteHeader/MobileNav";
 import { getSiteNavLinks } from "@/components/siteNavLinks";
 import { getMessages } from "@/messages/sr";
 
@@ -22,10 +23,7 @@ const SiteHeader = () => {
           {name}
         </Link>
         <nav>
-          <details className="relative md:hidden">
-            <summary className="cursor-pointer list-none text-ivory marker:content-none [&::-webkit-details-marker]:hidden">
-              {nav.menu}
-            </summary>
+          <MobileNav label={nav.menu}>
             <ul className="absolute right-0 top-full z-50 mt-3 flex w-max flex-col gap-3 border border-hairline bg-canvas p-4">
               {links.map((link) => (
                 <li key={link.href}>
@@ -35,7 +33,7 @@ const SiteHeader = () => {
                 </li>
               ))}
             </ul>
-          </details>
+          </MobileNav>
           <ul className="hidden items-center gap-6 md:flex">
             {links.map((link) => (
               <li key={link.href}>

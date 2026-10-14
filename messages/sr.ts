@@ -32,6 +32,11 @@ export const getMessages = () => ({
     empty: "Trenutno nema događaja.",
     back: "Svi događaji",
   },
+  notFound: {
+    title: "Stranica nije pronađena",
+    body: "Stranica koju tražite ne postoji ili je uklonjena.",
+    home: "Nazad na početnu",
+  },
   place: {
     title: "O mestu",
     day: "Tokom dana sipamo kafu i ostala pića.",

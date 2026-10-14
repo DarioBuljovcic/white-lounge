@@ -34,6 +34,9 @@ const DrinksSwitcher = ({
   const showNext = () => setActiveIndex((index) => (index + 1) % stories.length);
 
   const handleKeyDown = (event: KeyboardEvent<HTMLElement>) => {
+    if (event.altKey || event.metaKey || event.ctrlKey || event.shiftKey) {
+      return;
+    }
     if (event.key === "ArrowLeft") {
       event.preventDefault();
       showPrevious();
@@ -79,12 +82,14 @@ const DrinksSwitcher = ({
       onTouchEnd={handleTouchEnd}
       className={`relative flex h-svh touch-pan-y flex-col items-center justify-center gap-5 overflow-hidden px-gutter py-gutter text-ivory transition-colors duration-(--duration-drink-color) focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-brass md:gap-6 ${story.backgroundClassName}`}
     >
-      <h2
-        id="drink-title"
-        className="font-display text-section-title text-ivory"
-      >
-        {story.title}
-      </h2>
+      <div aria-live="polite">
+        <h2
+          id="drink-title"
+          className="font-display text-section-title text-ivory"
+        >
+          {story.title}
+        </h2>
+      </div>
       <div
         data-drink-media={story.media.type}
         role={story.media.type === "image" ? "img" : undefined}
