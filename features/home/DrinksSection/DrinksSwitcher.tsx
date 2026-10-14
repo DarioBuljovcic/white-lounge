@@ -79,21 +79,19 @@ const DrinksSwitcher = ({
       onTouchEnd={handleTouchEnd}
       className={`relative flex h-svh touch-pan-y flex-col items-center justify-center gap-5 overflow-hidden px-gutter py-gutter text-ivory transition-colors duration-(--duration-drink-color) focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-brass md:gap-6 ${story.backgroundClassName}`}
     >
+      <h2
+        id="drink-title"
+        className="font-display text-section-title text-ivory"
+      >
+        {story.title}
+      </h2>
       <div
         data-drink-media={story.media.type}
         role={story.media.type === "image" ? "img" : undefined}
         aria-label={story.media.type === "image" ? story.media.alt : undefined}
-        className="aspect-[3/4] h-[46svh] max-h-[70vh] border border-hairline bg-surface md:order-2 md:h-[50svh]"
+        className="order-first aspect-[3/4] h-[46svh] max-h-[70vh] border border-hairline bg-surface md:order-none md:h-[50svh]"
       />
-      <h2
-        id="drink-title"
-        className="font-display text-section-title text-ivory md:order-1"
-      >
-        {story.title}
-      </h2>
-      <p className="max-w-prose text-center text-ivory md:order-3">
-        {story.body}
-      </p>
+      <p className="max-w-prose text-center text-ivory">{story.body}</p>
       <div className="flex gap-4 md:contents">
         <button
           type="button"
