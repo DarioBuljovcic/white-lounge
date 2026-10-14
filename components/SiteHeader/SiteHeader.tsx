@@ -22,11 +22,11 @@ const SiteHeader = () => {
           {name}
         </Link>
         <nav>
-          <details className="md:hidden">
+          <details className="relative md:hidden">
             <summary className="cursor-pointer list-none text-ivory marker:content-none [&::-webkit-details-marker]:hidden">
               {nav.menu}
             </summary>
-            <ul className="flex flex-col gap-3 pt-3">
+            <ul className="absolute right-0 top-full z-50 mt-3 flex w-max flex-col gap-3 border border-hairline bg-canvas p-4">
               {links.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href} className={navLinkClassName}>
