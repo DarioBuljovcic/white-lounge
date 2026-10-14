@@ -15,6 +15,7 @@ const INTRO_MS = 4000;
 const SHRINK_FALLBACK_MS = 900;
 const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 const HEADER_ID = "site-header";
+const HERO_TITLE_ID = "hero-title";
 const HEADER_HIDDEN_CLASS = "is-hero-intro";
 
 const subscribeToReducedMotion = (onChange: () => void) => {
@@ -33,6 +34,7 @@ type HeroStageProps = {
 
 const HeroStage = ({ children, skipLabel }: HeroStageProps) => {
   const slotRef = useRef<HTMLDivElement>(null);
+  const shouldFocusTitleRef = useRef(false);
   const [settled, setSettled] = useState(false);
   const [shrinkInsets, setShrinkInsets] = useState<CSSProperties | null>(null);
   const reducedMotion = useSyncExternalStore(
@@ -49,17 +51,32 @@ const HeroStage = ({ children, skipLabel }: HeroStageProps) => {
     if (!intro) return;
 
     const header = document.getElementById(HEADER_ID);
+    const heroSection = slotRef.current?.closest("main > *");
+    const coveredElements = [
+      ...document.querySelectorAll("body > footer, main > *"),
+    ].filter(
+      (element) => element !== heroSection && !element.hasAttribute("inert"),
+    );
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     header?.setAttribute("inert", "");
     header?.classList.add(HEADER_HIDDEN_CLASS);
+    coveredElements.forEach((element) => element.setAttribute("inert", ""));
 
     return () => {
       document.body.style.overflow = previousOverflow;
       header?.removeAttribute("inert");
       header?.classList.remove(HEADER_HIDDEN_CLASS);
+      coveredElements.forEach((element) => element.removeAttribute("inert"));
     };
   }, [intro]);
+
+  useEffect(() => {
+    if (!settled || !shouldFocusTitleRef.current) return;
+
+    shouldFocusTitleRef.current = false;
+    document.getElementById(HERO_TITLE_ID)?.focus();
+  }, [settled]);
 
   useEffect(() => {
     if (!intro || shrinking) return;
@@ -99,6 +116,11 @@ const HeroStage = ({ children, skipLabel }: HeroStageProps) => {
     return () => window.clearTimeout(timer);
   }, [shrinking]);
 
+  const handleSkip = () => {
+    shouldFocusTitleRef.current = true;
+    setSettled(true);
+  };
+
   const handleTransitionEnd = (event: TransitionEvent<HTMLDivElement>) => {
     if (event.target === event.currentTarget && event.propertyName === "top") {
       setSettled(true);
@@ -121,7 +143,7 @@ const HeroStage = ({ children, skipLabel }: HeroStageProps) => {
           <button
             type="button"
             className="hero-skip"
-            onClick={() => setSettled(true)}
+            onClick={handleSkip}
           >
             {skipLabel}
           </button>

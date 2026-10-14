@@ -8,7 +8,10 @@ const HeroSection = () => {
   return (
     <section className="flex h-svh shrink-0 items-center justify-center">
       <HeroStage skipLabel={hero.skip}>
-        <h1 className="font-display text-name leading-none text-ivory">
+        <h1
+          id="hero-title"
+          tabIndex={-1}
+          className="font-display text-name leading-none text-ivory">
           {name}
         </h1>
         <p className="max-w-xl text-muted">{sentence}</p>
