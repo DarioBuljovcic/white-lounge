@@ -41,3 +41,94 @@ body {
   font-size: var(--text-body);
   line-height: var(--leading-body);
 }
+
+/* Hero: settled panel by default. The intro (fullscreen, then shrink) only
+   applies when motion is allowed and scripting can finish the sequence. */
+.hero-frame {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 1.5rem;
+  background: linear-gradient(
+    150deg,
+    var(--color-canvas) 0%,
+    var(--color-surface) 100%
+  );
+}
+
+.hero-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding-inline: var(--spacing-gutter);
+  text-align: center;
+}
+
+.hero-skip {
+  display: none;
+  position: absolute;
+  right: var(--spacing-gutter);
+  bottom: var(--spacing-gutter);
+  min-height: 3rem;
+  padding-inline: 1.5rem;
+  border: 1px solid var(--color-hairline);
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--color-ivory);
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.hero-skip:hover {
+  color: var(--color-brass);
+}
+
+.hero-skip:focus-visible {
+  outline: 2px solid var(--color-brass);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: no-preference) and (scripting: enabled) {
+  .hero-frame[data-phase="intro"],
+  .hero-frame[data-phase="shrinking"] {
+    position: fixed;
+    z-index: 40;
+  }
+
+  .hero-frame[data-phase="intro"] {
+    inset: 0;
+    border-radius: 0;
+  }
+
+  .hero-frame[data-phase="shrinking"] {
+    transition:
+      top var(--duration-hero-shrink) ease-in-out,
+      right var(--duration-hero-shrink) ease-in-out,
+      bottom var(--duration-hero-shrink) ease-in-out,
+      left var(--duration-hero-shrink) ease-in-out,
+      border-radius var(--duration-hero-shrink) ease-in-out;
+  }
+
+  .hero-frame[data-phase="intro"] .hero-content {
+    visibility: hidden;
+    opacity: 0;
+  }
+
+  .hero-frame[data-phase="shrinking"] .hero-content {
+    transition: opacity var(--duration-hero-shrink) ease-in;
+  }
+
+  .hero-frame[data-phase="intro"] .hero-skip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+#site-header.is-hero-intro {
+  visibility: hidden;
+}
