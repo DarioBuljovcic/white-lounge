@@ -17,6 +17,8 @@ export const getMessages = () => ({
     title: "Priča",
     body:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+    imageAlt1: "Prostor White Lounge",
+    imageAlt2: "Detalj enterijera",
   },
   drinks: {
     previous: "Prethodno",
